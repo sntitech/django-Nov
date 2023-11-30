@@ -1,0 +1,38 @@
+create table random_val (id int, val decimal);
+
+select * from random_val;
+
+insert into random_val
+select 1, random() from generate_series(1, 10000000);
+
+insert into random_val
+select 2, random() from generate_series(1, 10000000);
+
+
+select id, avg(val), count(*)
+from random_val
+group by id;
+
+create or replace view random_view as 
+select avg(val), sum(val), max(val)
+from random_val;
+
+drop view random_view;
+
+select * from random_view;
+
+
+create materialized view random_m_view as
+select id, avg(val), count(*)
+from random_val 
+group by id;
+
+select * from random_m_view;
+
+delete from random_val where id=1;
+
+refresh materialized view random_m_view;
+
+
+
+
