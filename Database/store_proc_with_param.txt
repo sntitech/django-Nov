@@ -1,0 +1,43 @@
+create or replace procedure product_sale_with_param_store_proc(p_product_name varchar, p_quantity int)
+language plpgsql
+as $$ 
+declare 
+	v_product_code int;
+	v_price float;
+	v_cnt int;
+begin 
+
+	select count(*)
+	into v_cnt
+	from products
+	where product_name = p_product_name and quantity >= p_quantity;
+
+	if v_cnt > 0 then
+	
+		select product_code, price
+		into v_product_code, v_price
+		from products
+		where product_name = p_product_name;
+	
+		insert into sales (order_date, product_code, quantity_ordered, sales_price)
+		values(current_date, v_product_code, p_quantity, (v_price * p_quantity));
+	
+		update products set quantity = (quantity - p_quantity), item_sold = (item_sold + p_quantity)
+		where product_code = v_product_code;
+		
+		raise notice 'Product Sold...';
+	else
+		raise notice 'Insufficient Quantity...';
+	end if;
+end;
+$$
+
+select * from products;
+select * from sales;
+
+call product_sale_with_param_store_proc('Oven', 2);
+
+
+
+
+

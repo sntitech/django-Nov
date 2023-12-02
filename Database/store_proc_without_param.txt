@@ -1,0 +1,68 @@
+
+/*
+ 
+  For every product in product table if any product sold insert new 
+  row in sales table and modify(update) product table;
+ 
+ */ 
+
+
+-- drop table products;
+
+create table products(product_code serial primary key, product_name text,
+					  price float, quantity int, item_sold int);
+					  
+insert into products (product_name, price, quantity, item_sold)
+values ('TV', 35000, 8, 2), 
+	   ('Freeze', 28000, 10, 0),
+	   ('AC', 47000, 5, 5), 
+	   ('Oven', 18000, 2, 8),
+	   ('Mobile', 90000, 4, 6);
+
+-- delete from products where product_code in (6,7,8,9,10);
+
+select * from products;
+
+
+drop table sales;
+
+create table sales (order_id serial primary key, order_date date, product_code int,
+					quantity_ordered int, sales_price float);
+
+insert into sales (order_date, product_code, quantity_ordered, sales_price)
+values('2023-01-12', 3, 1, 47000);
+
+
+select * from sales;
+
+-- Without Parameter Stored Procedure
+
+create or replace procedure product_sale_without_param_store_proc()
+language plpgsql
+as $$ 
+declare 
+	v_product_code int;
+	v_price float;
+begin 
+	
+	select product_code, price
+	into v_product_code, v_price
+	from products
+	where product_name = 'Freeze';
+
+	insert into sales (order_date, product_code, quantity_ordered, sales_price)
+	values(current_date, v_product_code, 2, (v_price * 2));
+
+	update products set quantity = (quantity - 2), item_sold = (item_sold + 2)
+	where product_code = v_product_code;
+	
+	raise notice 'Product Sold...';
+end;
+$$
+
+select * from products;
+select * from sales;
+
+call product_sale_without_param_store_proc();
+
+select $$I'm Developer$$;
