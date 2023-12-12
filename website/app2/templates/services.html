@@ -1,5 +1,20 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <h1>Services Page</h1>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div>
+        <form method="post" action="upload_image">
+        {% csrf_token %}
+        <label for="">Email</label>
+        <input type="file" name="file" placeholder="Enter your email">
+        <br>
+        <button type="Submit">Submit</button>
+        </form>
+        Have to register ? <a href="signup"><button>Signup</button></a>
+    </div>
+</body>
+</html>
